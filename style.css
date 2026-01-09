@@ -1,0 +1,113 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Courier New', monospace;
+}
+
+#game-container {
+    position: relative;
+    background: #001a33;
+    border: 4px solid #0ff;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+}
+
+#header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    color: #0ff;
+    font-size: 18px;
+    font-weight: bold;
+    text-shadow: 0 0 10px #0ff;
+}
+
+#title {
+    font-size: 24px;
+    letter-spacing: 4px;
+}
+
+#gameCanvas {
+    display: block;
+    background: linear-gradient(180deg,
+        #001a33 0%,
+        #002244 20%,
+        #003366 40%,
+        #004488 60%,
+        #002244 80%,
+        #001122 100%);
+    border: 2px solid #066;
+}
+
+#controls {
+    text-align: center;
+    padding: 10px;
+    color: #088;
+    font-size: 12px;
+}
+
+#start-screen,
+#game-over {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #0ff;
+    background: rgba(0, 20, 40, 0.95);
+    padding: 40px 60px;
+    border: 3px solid #0ff;
+    border-radius: 10px;
+    z-index: 10;
+}
+
+#start-screen h1,
+#game-over h1 {
+    font-size: 48px;
+    letter-spacing: 6px;
+    margin-bottom: 20px;
+    text-shadow: 0 0 20px #0ff;
+}
+
+#start-screen p,
+#game-over p {
+    font-size: 16px;
+    margin-bottom: 30px;
+    color: #8cf;
+}
+
+#start-btn,
+#restart-btn {
+    background: transparent;
+    color: #0ff;
+    border: 2px solid #0ff;
+    padding: 15px 40px;
+    font-size: 18px;
+    font-family: 'Courier New', monospace;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+#start-btn:hover,
+#restart-btn:hover {
+    background: #0ff;
+    color: #001a33;
+    box-shadow: 0 0 20px #0ff;
+}
+
+.hidden {
+    display: none !important;
+}
