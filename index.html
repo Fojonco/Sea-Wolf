@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sea Wolf</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -15,7 +15,11 @@
         </div>
         <canvas id="gameCanvas" width="800" height="500"></canvas>
         <div id="controls">
-            <p>MOVE: Arrow Keys or Mouse | FIRE: Spacebar or Click</p>
+            <p class="desktop-controls">MOVE: Arrow Keys or Mouse | FIRE: Spacebar or Click</p>
+            <p class="mobile-controls">TOUCH to aim | TAP FIRE button to shoot</p>
+        </div>
+        <div id="mobile-controls">
+            <button id="fire-btn">FIRE</button>
         </div>
         <div id="start-screen">
             <h1>SEA WOLF</h1>

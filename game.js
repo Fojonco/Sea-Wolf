@@ -114,13 +114,56 @@ const restartBtn = document.getElementById('restart-btn');
 startBtn.addEventListener('click', startGame);
 restartBtn.addEventListener('click', startGame);
 
-canvas.addEventListener('mousemove', (e) => {
+// Touch support for start/restart buttons
+startBtn.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    startGame();
+});
+restartBtn.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    startGame();
+});
+
+// Helper to convert screen coordinates to canvas coordinates
+function getCanvasX(clientX) {
     const rect = canvas.getBoundingClientRect();
-    crosshairX = e.clientX - rect.left;
+    const scaleX = canvas.width / rect.width;
+    return (clientX - rect.left) * scaleX;
+}
+
+canvas.addEventListener('mousemove', (e) => {
+    crosshairX = getCanvasX(e.clientX);
     crosshairX = Math.max(30, Math.min(canvas.width - 30, crosshairX));
 });
 
 canvas.addEventListener('click', fireTorpedo);
+
+// Touch events for mobile
+canvas.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    if (e.touches.length > 0) {
+        crosshairX = getCanvasX(e.touches[0].clientX);
+        crosshairX = Math.max(30, Math.min(canvas.width - 30, crosshairX));
+    }
+}, { passive: false });
+
+canvas.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    if (e.touches.length > 0) {
+        crosshairX = getCanvasX(e.touches[0].clientX);
+        crosshairX = Math.max(30, Math.min(canvas.width - 30, crosshairX));
+    }
+}, { passive: false });
+
+// Mobile fire button
+const fireBtn = document.getElementById('fire-btn');
+if (fireBtn) {
+    fireBtn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        fireTorpedo();
+    }, { passive: false });
+    fireBtn.addEventListener('click', fireTorpedo);
+}
 
 document.addEventListener('keydown', (e) => {
     if (e.code === 'Space' && gameRunning) {
