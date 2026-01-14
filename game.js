@@ -138,32 +138,95 @@ canvas.addEventListener('mousemove', (e) => {
 
 canvas.addEventListener('click', fireTorpedo);
 
-// Touch events for mobile
-canvas.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    if (e.touches.length > 0) {
-        crosshairX = getCanvasX(e.touches[0].clientX);
-        crosshairX = Math.max(30, Math.min(canvas.width - 30, crosshairX));
-    }
-}, { passive: false });
+// Touch zone elements
+const touchLeft = document.getElementById('touch-left');
+const touchRight = document.getElementById('touch-right');
+const touchFire = document.getElementById('touch-fire');
 
-canvas.addEventListener('touchmove', (e) => {
-    e.preventDefault();
-    if (e.touches.length > 0) {
-        crosshairX = getCanvasX(e.touches[0].clientX);
-        crosshairX = Math.max(30, Math.min(canvas.width - 30, crosshairX));
-    }
-}, { passive: false });
+// Track active touch zones
+const touchState = {
+    left: false,
+    right: false
+};
 
-// Mobile fire button
-const fireBtn = document.getElementById('fire-btn');
-if (fireBtn) {
-    fireBtn.addEventListener('touchstart', (e) => {
+// Helper to update visual state of touch zones
+function setTouchZoneActive(zone, active) {
+    if (zone) {
+        if (active) {
+            zone.classList.add('active');
+        } else {
+            zone.classList.remove('active');
+        }
+    }
+}
+
+// Left touch zone - move left
+if (touchLeft) {
+    touchLeft.addEventListener('touchstart', (e) => {
         e.preventDefault();
+        touchState.left = true;
+        keys.left = true;
+        setTouchZoneActive(touchLeft, true);
+    }, { passive: false });
+
+    touchLeft.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        touchState.left = false;
+        keys.left = false;
+        setTouchZoneActive(touchLeft, false);
+    }, { passive: false });
+
+    touchLeft.addEventListener('touchcancel', (e) => {
+        touchState.left = false;
+        keys.left = false;
+        setTouchZoneActive(touchLeft, false);
+    });
+}
+
+// Right touch zone - move right
+if (touchRight) {
+    touchRight.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        touchState.right = true;
+        keys.right = true;
+        setTouchZoneActive(touchRight, true);
+    }, { passive: false });
+
+    touchRight.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        touchState.right = false;
+        keys.right = false;
+        setTouchZoneActive(touchRight, false);
+    }, { passive: false });
+
+    touchRight.addEventListener('touchcancel', (e) => {
+        touchState.right = false;
+        keys.right = false;
+        setTouchZoneActive(touchRight, false);
+    });
+}
+
+// Fire touch zone - fire torpedo
+if (touchFire) {
+    touchFire.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        setTouchZoneActive(touchFire, true);
         fireTorpedo();
     }, { passive: false });
-    fireBtn.addEventListener('click', fireTorpedo);
+
+    touchFire.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        setTouchZoneActive(touchFire, false);
+    }, { passive: false });
+
+    touchFire.addEventListener('touchcancel', (e) => {
+        setTouchZoneActive(touchFire, false);
+    });
 }
+
+// Prevent default touch behavior on canvas to avoid scrolling
+canvas.addEventListener('touchstart', (e) => e.preventDefault(), { passive: false });
+canvas.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
 
 document.addEventListener('keydown', (e) => {
     if (e.code === 'Space' && gameRunning) {
@@ -864,6 +927,95 @@ function gameLoop() {
 
     requestAnimationFrame(gameLoop);
 }
+
+// Responsive canvas sizing
+const canvasWrapper = document.getElementById('canvas-wrapper');
+const touchZones = document.getElementById('touch-zones');
+
+// Base dimensions
+const BASE_WIDTH = 800;
+const BASE_HEIGHT = 500;
+
+function resizeCanvas() {
+    if (!canvasWrapper) return;
+
+    const wrapperRect = canvasWrapper.getBoundingClientRect();
+    const isPortrait = wrapperRect.height > wrapperRect.width;
+
+    let targetWidth, targetHeight;
+
+    if (isPortrait) {
+        // Portrait mode: use a taller aspect ratio
+        // Keep width at 800 but increase height to better fill portrait screens
+        const portraitRatio = wrapperRect.width / wrapperRect.height;
+        targetWidth = BASE_WIDTH;
+        // Calculate height to match screen ratio, but cap it
+        targetHeight = Math.min(BASE_WIDTH / portraitRatio, 1000);
+    } else {
+        // Landscape mode: use original dimensions
+        targetWidth = BASE_WIDTH;
+        targetHeight = BASE_HEIGHT;
+    }
+
+    // Update canvas internal resolution
+    if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
+        canvas.width = targetWidth;
+        canvas.height = targetHeight;
+
+        // Keep crosshair in bounds
+        crosshairX = Math.max(30, Math.min(canvas.width - 30, crosshairX));
+
+        // Redraw if game isn't running
+        if (!gameRunning) {
+            draw();
+        }
+    }
+
+    // Calculate CSS size to fit container
+    const canvasAspect = targetWidth / targetHeight;
+    const containerAspect = wrapperRect.width / wrapperRect.height;
+
+    let cssWidth, cssHeight;
+    if (containerAspect > canvasAspect) {
+        cssHeight = wrapperRect.height;
+        cssWidth = cssHeight * canvasAspect;
+    } else {
+        cssWidth = wrapperRect.width;
+        cssHeight = cssWidth / canvasAspect;
+    }
+
+    canvas.style.width = cssWidth + 'px';
+    canvas.style.height = cssHeight + 'px';
+
+    // Position touch zones to match canvas
+    if (touchZones) {
+        const canvasRect = canvas.getBoundingClientRect();
+        const offsetLeft = canvasRect.left - wrapperRect.left;
+        const offsetTop = canvasRect.top - wrapperRect.top;
+
+        touchZones.style.left = offsetLeft + 'px';
+        touchZones.style.top = offsetTop + 'px';
+        touchZones.style.width = cssWidth + 'px';
+        touchZones.style.height = cssHeight + 'px';
+    }
+}
+
+// Debounce resize events
+let resizeTimeout;
+function handleResize() {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(resizeCanvas, 100);
+}
+
+// Listen for resize and orientation changes
+window.addEventListener('resize', handleResize);
+window.addEventListener('orientationchange', () => {
+    // Delay for orientation change to complete
+    setTimeout(resizeCanvas, 200);
+});
+
+// Initial resize
+resizeCanvas();
 
 // Initial draw
 draw();

@@ -10,7 +10,9 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    min-height: 100dvh;
     font-family: 'Courier New', monospace;
+    overflow: hidden;
 }
 
 #game-container {
@@ -125,19 +127,32 @@ body {
     display: none !important;
 }
 
+/* Canvas wrapper for touch zones */
+#canvas-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 /* Mobile Responsive Styles */
-@media (max-width: 850px) {
+@media (max-width: 850px), (max-height: 600px) {
     #game-container {
         width: 100%;
+        height: 100vh;
+        height: 100dvh;
         max-width: 100vw;
-        padding: 5px;
+        padding: 0;
         border-radius: 0;
-        border-width: 2px;
+        border-width: 2px 0;
+        display: flex;
+        flex-direction: column;
     }
 
     #header {
         padding: 8px 10px;
         font-size: 14px;
+        flex-shrink: 0;
     }
 
     #title {
@@ -145,16 +160,26 @@ body {
         letter-spacing: 2px;
     }
 
-    #gameCanvas {
+    #canvas-wrapper {
+        flex: 1;
+        min-height: 0;
         width: 100%;
+        overflow: hidden;
+    }
+
+    #gameCanvas {
+        max-width: 100%;
+        max-height: 100%;
+        width: auto;
         height: auto;
-        max-height: 60vh;
         touch-action: none;
+        object-fit: contain;
     }
 
     #controls {
         font-size: 10px;
         padding: 5px;
+        flex-shrink: 0;
     }
 
     #start-screen,
@@ -184,40 +209,132 @@ body {
     }
 }
 
-/* Mobile Fire Button */
-#mobile-controls {
-    display: none;
-    justify-content: center;
-    padding: 10px;
-    gap: 20px;
-}
+/* Landscape mobile optimization */
+@media (max-height: 500px) and (orientation: landscape) {
+    #header {
+        padding: 4px 10px;
+        font-size: 12px;
+    }
 
-#fire-btn {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: rgba(255, 0, 0, 0.3);
-    border: 3px solid #f00;
-    color: #fff;
-    font-family: 'Courier New', monospace;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-    touch-action: manipulation;
-    user-select: none;
-    -webkit-user-select: none;
-    box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
-    transition: all 0.1s;
-}
+    #title {
+        font-size: 14px;
+    }
 
-#fire-btn:active {
-    background: rgba(255, 0, 0, 0.6);
-    transform: scale(0.95);
-}
+    #controls {
+        display: none;
+    }
 
-@media (max-width: 850px) {
     #mobile-controls {
-        display: flex;
+        display: none !important;
+    }
+}
+
+/* Touch Zone Controls */
+#touch-zones {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+.touch-zone {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    pointer-events: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0.3;
+    transition: opacity 0.15s ease;
+}
+
+.touch-zone.active {
+    opacity: 0.6;
+}
+
+/* Left movement zone (left half of left side) */
+#touch-left {
+    left: 0;
+    width: 25%;
+    background: linear-gradient(90deg, rgba(0, 150, 255, 0.15) 0%, transparent 100%);
+    border-right: 1px dashed rgba(0, 200, 255, 0.3);
+}
+
+/* Right movement zone (right half of left side) */
+#touch-right {
+    left: 25%;
+    width: 25%;
+    background: linear-gradient(90deg, transparent 0%, rgba(0, 150, 255, 0.15) 50%, transparent 100%);
+    border-right: 2px solid rgba(0, 200, 255, 0.4);
+}
+
+/* Fire zone (right half of screen) */
+#touch-fire {
+    right: 0;
+    width: 50%;
+    background: linear-gradient(270deg, rgba(255, 50, 50, 0.15) 0%, transparent 100%);
+}
+
+/* Zone labels */
+.zone-label {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+    pointer-events: none;
+}
+
+.zone-icon {
+    font-size: 24px;
+    margin-bottom: 4px;
+    pointer-events: none;
+}
+
+#touch-left .zone-icon::before {
+    content: '◀';
+    color: rgba(0, 200, 255, 0.7);
+}
+
+#touch-right .zone-icon::before {
+    content: '▶';
+    color: rgba(0, 200, 255, 0.7);
+}
+
+#touch-fire .zone-icon::before {
+    content: '●';
+    color: rgba(255, 100, 100, 0.8);
+}
+
+#touch-fire .zone-label {
+    color: rgba(255, 150, 150, 0.7);
+}
+
+/* Hide old mobile fire button */
+#mobile-controls {
+    display: none !important;
+}
+
+/* Show touch zones on mobile/touch devices */
+@media (max-width: 850px), (pointer: coarse) {
+    #touch-zones {
+        display: block;
+    }
+}
+
+/* Adjust for landscape */
+@media (max-height: 500px) and (orientation: landscape) {
+    .zone-label {
+        font-size: 10px;
+    }
+    .zone-icon {
+        font-size: 20px;
     }
 }
 

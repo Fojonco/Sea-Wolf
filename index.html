@@ -13,13 +13,26 @@
             <div id="title">SEA WOLF</div>
             <div id="time">TIME: <span id="time-value">60</span></div>
         </div>
-        <canvas id="gameCanvas" width="800" height="500"></canvas>
+        <div id="canvas-wrapper">
+            <canvas id="gameCanvas" width="800" height="500"></canvas>
+            <div id="touch-zones">
+                <div id="touch-left" class="touch-zone">
+                    <div class="zone-icon"></div>
+                    <span class="zone-label">Left</span>
+                </div>
+                <div id="touch-right" class="touch-zone">
+                    <div class="zone-icon"></div>
+                    <span class="zone-label">Right</span>
+                </div>
+                <div id="touch-fire" class="touch-zone">
+                    <div class="zone-icon"></div>
+                    <span class="zone-label">Fire</span>
+                </div>
+            </div>
+        </div>
         <div id="controls">
             <p class="desktop-controls">MOVE: Arrow Keys or Mouse | FIRE: Spacebar or Click</p>
-            <p class="mobile-controls">TOUCH to aim | TAP FIRE button to shoot</p>
-        </div>
-        <div id="mobile-controls">
-            <button id="fire-btn">FIRE</button>
+            <p class="mobile-controls">LEFT/RIGHT zones to move | RIGHT zone to fire</p>
         </div>
         <div id="start-screen">
             <h1>SEA WOLF</h1>
